@@ -6,22 +6,13 @@ body {
     background: #f8f9fa;
     min-height: 100vh;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
+    position: relative;
+    padding-bottom: 60px;
 }
 
-/* Sınav ve Sonuç Konteynerleri */
-.quiz-container,
-.result-container {
-    max-width: 600px;
-    width: 100%;
-    padding: 30px;
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 0 15px rgba(0,0,0,0.1);
-}
 
-/* Sağ Üst Skor Kutusu */
 .score-box {
     position: fixed;
     top: 20px;
@@ -33,21 +24,47 @@ body {
     z-index: 1000;
 }
 
-/* Kullanıcı Giriş ve Soru Stilleri */
+
+.quiz-container {
+    max-width: 600px;
+    width: 100%;
+    margin: 20px auto;
+    padding: 30px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    flex: 1;
+}
+
+/* Kullanıcı Girişi */
 .user-input {
     margin-bottom: 20px;
 }
 
+.user-input label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.user-input input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+/* Soru ve Seçenekler */
 .question-card {
     margin-bottom: 20px;
     padding: 15px;
     background: #f9f9f9;
     border-radius: 5px;
+    border: 1px solid #eee;
 }
 
 .option {
     display: block;
-    margin: 5px 0;
+    margin: 8px 0;
     padding: 10px;
     background: #eaeaea;
     border-radius: 4px;
@@ -56,49 +73,32 @@ body {
 }
 
 .option:hover {
-    background: #dcdcdc;
+    background: #ddd;
 }
 
-/* Buton Stilleri */
-.submit-btn,
-.retry-btn {
-    background: #28a745;
+.submit-btn {
+    background: #218838;
     color: white;
-    padding: 10px 20px;
+    padding: 12px 20px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     width: 100%;
     margin-top: 20px;
+    font-size: 1em;
     transition: background-color 0.3s;
 }
 
-.submit-btn:hover,
-.retry-btn:hover {
-    background: #218838;
+.submit-btn:hover {
+    background: #1a6c2e;
 }
 
-/* Sonuç Sayfası Özel Stiller */
-.result-container {
-    text-align: center;
-}
 
-.score {
-    color: #28a745;
-    font-size: 1.5em;
-    font-weight: bold;
-}
-
-/* Footer */
 .footer {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
     text-align: center;
-    padding: 5px;
-    background: #333;
-    color: white;
+    padding: 15px;
+    color: #666;
     font-size: 0.8em;
-    z-index: 1000;
+    background: #f8f9fa;
+    margin-top: auto;
 }

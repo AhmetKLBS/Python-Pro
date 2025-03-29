@@ -1,54 +1,44 @@
 <!DOCTYPE html>
-<html>
+<html lang="tr">
 <head>
-    <title>Python Pro Quiz</title>
-    <style>
-        body { font-family: Arial, sans-serif; position: relative; min-height: 100vh; }
-        footer { position: absolute; bottom: 0; left: 0; right: 0; text-align: center; padding: 10px; }
-        .score-box { position: fixed; top: 10px; right: 10px; background: #f0f0f0; padding: 10px; }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <title>Quiz</title>
 </head>
 <body>
+    <!-- Sağ Üst Skor Kutusu -->
     <div class="score-box">
-        <p>Top Score: {{ top_score }}%</p>
+        <p>Kişisel Yüksek Skor: <strong>{{ user_highest }}%</strong></p>
+        <p>Genel Yüksek Skor: <strong>{{ top_score }}%</strong></p>
     </div>
 
-    <h1>Python Pro Seviye Sınavı</h1>
-    <form method="POST">
-        <h2>Kullanıcı Adı:</h2>
-        <input type="text" name="username" required>
+    <div class="quiz-container">
+        <h1>Quiz</h1>
+        <form method="POST" action="/submit">
+            <div class="user-input">
+                <label for="username">Adınız:</label>
+                <input type="text" name="username" id="username" required>
+            </div>
 
-        <h2>1. Discord botu geliştirmek için hangi kütüphane kullanılır?</h2>
-        <input type="radio" name="q1" value="discord.py" required> Discord.py<br>
-        <input type="radio" name="q1" value="flask"> Flask<br>
-        <input type="radio" name="q1" value="django"> Django<br>
+            {% for q in questions %}
+                <fieldset class="question-card">
+                    <legend>{{ q.id }}. {{ q.question }}</legend>
+                    {% for option in q.options %}
+                        <div class="option">
+                            <input type="radio" id="q{{ q.id }}_{{ loop.index }}" name="q{{ q.id }}" value="{{ option }}" required>
+                            <label for="q{{ q.id }}_{{ loop.index }}">{{ option }}</label>
+                        </div>
+                    {% endfor %}
+                </fieldset>
+            {% endfor %}
 
-        <h2>2. Flask'ta template engine olarak ne kullanılır?</h2>
-        <input type="radio" name="q2" value="jinja2" required> Jinja2<br>
-        <input type="radio" name="q2" value="handlebars"> Handlebars<br>
-        <input type="radio" name="q2" value="pug"> Pug<br>
+            <button type="submit" class="submit-btn">Sınavı Gönder</button>
+        </form>
+    </div>
 
-        <h2>3. Bilgisayar görüşü için hangi kütüphane kullanılır?</h2>
-        <input type="radio" name="q3" value="tensorflow" required> TensorFlow<br>
-        <input type="radio" name="q3" value="scikit"> Scikit-learn<br>
-        <input type="radio" name="q3" value="pandas"> Pandas<br>
-
-        <h2>4. Doğal Dil İşleme için hangi kütüphane kullanılır?</h2>
-        <input type="radio" name="q4" value="nltk" required> NLTK<br>
-        <input type="radio" name="q4" value="opencv"> OpenCV<br>
-        <input type="radio" name="q4" value="requests"> Requests<br>
-
-        <h2>5. Web scraping için hangi kütüphane kullanılır?</h2>
-        <input type="radio" name="q5" value="beautifulsoup" required> BeautifulSoup<br>
-        <input type="radio" name="q5" value="numpy"> NumPy<br>
-        <input type="radio" name="q5" value="matplotlib"> Matplotlib<br>
-
-        <br>
-        <input type="submit" value="Sınavı Gönder">
-    </form>
-
-    <footer>
-        Ahmet tarafından geliştirildi.
+    <footer class="footer">
+        <p>Ahmet Kulabaş tarafından geliştirildi. Tüm hakları saklıdır.</p>
     </footer>
 </body>
 </html>

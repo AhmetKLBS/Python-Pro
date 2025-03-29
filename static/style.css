@@ -1,0 +1,104 @@
+/* Genel Ayarlar */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background: #f8f9fa;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Sınav ve Sonuç Konteynerleri */
+.quiz-container,
+.result-container {
+    max-width: 600px;
+    width: 100%;
+    padding: 30px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.1);
+}
+
+/* Sağ Üst Skor Kutusu */
+.score-box {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #f0f0f0;
+    padding: 10px 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    z-index: 1000;
+}
+
+/* Kullanıcı Giriş ve Soru Stilleri */
+.user-input {
+    margin-bottom: 20px;
+}
+
+.question-card {
+    margin-bottom: 20px;
+    padding: 15px;
+    background: #f9f9f9;
+    border-radius: 5px;
+}
+
+.option {
+    display: block;
+    margin: 5px 0;
+    padding: 10px;
+    background: #eaeaea;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.option:hover {
+    background: #dcdcdc;
+}
+
+/* Buton Stilleri */
+.submit-btn,
+.retry-btn {
+    background: #28a745;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 20px;
+    transition: background-color 0.3s;
+}
+
+.submit-btn:hover,
+.retry-btn:hover {
+    background: #218838;
+}
+
+/* Sonuç Sayfası Özel Stiller */
+.result-container {
+    text-align: center;
+}
+
+.score {
+    color: #28a745;
+    font-size: 1.5em;
+    font-weight: bold;
+}
+
+/* Footer */
+.footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    text-align: center;
+    padding: 5px;
+    background: #333;
+    color: white;
+    font-size: 0.8em;
+    z-index: 1000;
+}

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Kullanıcı Verileri</title>
+</head>
+<body>
+    <h1>Tüm Kullanıcı Puanları</h1>
+    <table border="1">
+        <tr>
+            <th>Kullanıcı Adı</th>
+            <th>Puan</th>
+            <th>Oturum ID</th>
+            <th>Zaman</th>
+        </tr>
+        {% for score in scores %}
+        <tr>
+            <td>{{ score.username }}</td>
+            <td>{{ score.score }}</td>
+            <td>{{ score.session_id }}</td>
+            <td>{{ score.timestamp }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

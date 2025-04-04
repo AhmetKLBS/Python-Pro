@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, make_response, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, make_response
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import uuid
@@ -12,18 +12,16 @@ db = SQLAlchemy(app)
 
 class Score(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(50), nullable=False, unique=True)  # Kullanıcı adı unique
-    highest_score = db.Column(db.Integer, nullable=False)  # En yüksek skor
+    session_id = db.Column(db.String(36), nullable=False)
+    username = db.Column(db.String(50), nullable=False)
+    score = db.Column(db.Integer, nullable=False)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
 
-with app.app_context():
-    db.create_all()
-
-# Sorular ve cevaplar
+# Sorular ve cevaplar (EN BAŞTA TANIMLANMALI)
 questions = [
     {
         'id': 1,
-        'question': 'Discord.py kütüphanesinin temel kullanım amacı nedir?',
+        'question': 'Discord.py kütüphanesi temel olarak hangi amaçla kullanılır?',
         'options': ['Web geliştirme', 'Sohbet botu oluşturma', 'Veri analizi', 'Makine öğrenimi'],
         'correct': 'Sohbet botu oluşturma'
     },
@@ -47,7 +45,7 @@ questions = [
     },
     {
         'id': 5,
-        'question': 'NLTK kütüphanesinin temel kullanım amacı nedir?',
+        'question': 'NLTK kütüphanesinin temel kullanımı nedir?',
         'options': ['Web scraping', 'Doğal Dil İşleme', 'Veri görselleştirme', 'Makine öğrenimi'],
         'correct': 'Doğal Dil İşleme'
     },
@@ -59,80 +57,94 @@ questions = [
     },
     {
         'id': 7,
-        'question': "Flask'ta template engine olarak ne kullanılır?",
+        'question': 'Flask\'ta template engine olarak ne kullanılır?',
         'options': ['jinja2', 'handlebars', 'pug', 'ejs'],
         'correct': 'jinja2'
     }
 ]
 
+@app.before_first_request
+def create_tables():
+    db.create_all()
+
 @app.context_processor
 def inject_scores():
     total_questions = len(questions)
-    global_highest = db.session.query(db.func.max(Score.highest_score)).scalar() or 0
-    global_highest_percentage = (global_highest / total_questions) * 100 if total_questions else 0
+    session_id = request.cookies.get('session_id')
 
-    username = request.cookies.get('username', '')
-    user_highest = 0
-    if username:
-        user_score = Score.query.filter_by(username=username).first()
-        if user_score:
-            user_highest = user_score.highest_score
-    user_highest_percentage = (user_highest / total_questions) * 100 if total_questions else 0
+    # Tüm Kullanıcıların En Yüksek Skoru
+    global_max = db.session.query(db.func.max(Score.score)).scalar() or 0
+    global_percent = round((global_max / total_questions) * 100, 2) if total_questions else 0
 
-    return {
-        'top_score': round(global_highest_percentage, 2),
-        'user_highest': round(user_highest_percentage, 2),
-        'username': username
-    }
+    # Mevcut Kullanıcının En Yüksek Skoru
+    user_max = db.session.query(db.func.max(Score.score)).filter_by(session_id=session_id).scalar() or 0
+    user_percent = round((user_max / total_questions) * 100, 2) if total_questions else 0
+
+    return dict(
+        top_score=global_percent,
+        user_highest=user_percent
+    )
 
 @app.route('/')
 def index():
-    session_id = request.cookies.get('session_id')
-    if not session_id:
-        session_id = str(uuid.uuid4())
-    
+    session_id = request.cookies.get('session_id') or str(uuid.uuid4())
     response = make_response(render_template('index.html', questions=questions))
     response.set_cookie('session_id', session_id)
     return response
-
+@app.route('/users')
+def list_users():
+    all_scores = Score.query.all()
+    
+    # Toplam soru sayısını hesapla
+    total_questions = len(questions)
+    
+    return render_template('users.html', scores=all_scores, total_questions=total_questions)
 @app.route('/submit', methods=['POST'])
 def submit():
     username = request.form.get('username').strip()
     score = 0
-    total_questions = len(questions)
+    session_id = request.cookies.get('session_id')
 
-    # Skor hesapla
     for q in questions:
         user_answer = request.form.get(f'q{q["id"]}')
         if user_answer == q['correct']:
             score += 1
 
-    # Veritabanını güncelle
-    existing_user = Score.query.filter_by(username=username).first()
-    if existing_user:
-        if score > existing_user.highest_score:
-            existing_user.highest_score = score
-            existing_user.timestamp = datetime.utcnow()
-    else:
-        new_user = Score(username=username, highest_score=score)
-        db.session.add(new_user)
-    
-    db.session.commit()
+    if session_id and username:
+        new_score = Score(
+            session_id=session_id,
+            username=username,
+            score=score
+        )
+        db.session.add(new_score)
+        db.session.commit()
 
-    # Cookie'e kullanıcı adını kaydet
-    response = make_response(render_template(
+    return redirect(url_for('result'))
+
+@app.route('/result')
+def result():
+    session_id = request.cookies.get('session_id')
+    last_score = 0
+    user_scores = Score.query.filter_by(session_id=session_id).order_by(Score.timestamp.desc()).first()
+    if user_scores:
+        last_score = user_scores.score
+
+    # Tüm Kullanıcıların En Yüksek Skoru
+    global_max = db.session.query(db.func.max(Score.score)).scalar() or 0
+    global_percent = round((global_max / len(questions)) * 100, 2)
+
+    # Mevcut Kullanıcının En Yüksek Skoru
+    user_max = db.session.query(db.func.max(Score.score)).filter_by(session_id=session_id).scalar() or 0
+    user_percent = round((user_max / len(questions)) * 100, 2)
+
+    return render_template(
         'result.html',
-        last_score=(score / total_questions) * 100 if total_questions else 0,
-        total=total_questions
-    ))
-    response.set_cookie('username', username)
-    return response
+        last_score=last_score,
+        user_highest=user_percent,
+        top_score=global_percent,
+        total=len(questions)
+    )
 
 @app.route('/favicon.ico')
 def favicon():
-    return send_from_directory('static/images', 'favicon.ico')
-
-"""
-kodun çalıştırılması ve test edilmesi için aşağıdaki siteden deneyin otomatik olarak girecektir.
-https://ahmet5414.pythonanywhere.com/
-"""
+    return app.send_static_file('favicon.ico')

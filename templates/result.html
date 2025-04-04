@@ -1,22 +1,20 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <title>Sınav Sonucu</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
     <div class="result-container">
         <h1>Sınav Sonucu</h1>
-        <p>Skorunuz: <strong class="score">{{ last_score }}%</strong></p>
-        <p>Kişisel Yüksek Skorunuz: <strong>{{ user_highest }}%</strong></p>
-        <p>Genel Yüksek Skor: <strong>{{ top_score }}%</strong></p>
+        <p>Skorunuz: <span class="score">{{ last_score }}%</span></p>
+        <p>Kişisel Yüksek Skorunuz: {{ user_highest }}%</p>
+        <p>Genel Yüksek Skor: {{ top_score }}%</p>
         <button onclick="location.href='/'" class="retry-btn">Yeniden Dene</button>
     </div>
 
     <footer class="footer">
-        <p>Ahmet Kulabaş tarafından geliştirildi. Tüm hakları saklıdır.</p>
+        Ahmet Kulabaş tarafından geliştirildi. Tüm hakları saklıdır.
     </footer>
 </body>
 </html>
